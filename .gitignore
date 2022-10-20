@@ -1,15 +1,28 @@
-# Binaries for programs and plugins
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
+# Ignore all
+*
 
-# Test binary, built with `go test -c`
-*.test
+# Unignore all with extensions
+!*.*
+!**/Dockerfile
 
-# Output of the go coverage tool, specifically when used with LiteIDE
-*.out
+# Unignore all dirs
+!*/
+!api
+bin/
 
-# Dependency directories (remove the comment below to include it)
-# vendor/
+.idea
+.idea/*.*
+.vscode
+**/.DS_Store
+**/logs
+!Makefile
+
+# gitlab ci
+.cache
+
+# vim auto backup file
+*~
+!OWNERS
+
+#**/*.yaml
+*_local.yaml
