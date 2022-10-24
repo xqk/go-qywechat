@@ -24,3 +24,14 @@ func (c *QyWechatSystemApp) BatchListExternalContact(userIDs []string, cursor st
 	}
 	return &BatchListExternalContactsResp{Result: resp.ExternalContactList, NextCursor: resp.NextCursor}, nil
 }
+
+// GetExternalContact 获取客户详情
+func (c *QyWechatSystemApp) GetExternalContact(externalUserID string) (*ExternalContactInfo, error) {
+	resp, err := c.execExternalContactGet(reqExternalContactGet{
+		ExternalUserID: externalUserID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &resp.ExternalContactInfo, nil
+}

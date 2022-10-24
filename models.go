@@ -78,6 +78,38 @@ type respJSAPITicket struct {
 	ExpiresInSecs int64  `json:"expires_in"`
 }
 
+// respExternalContactList 获取客户列表
+type respExternalContactList struct {
+	respCommon
+
+	ExternalUserID []string `json:"external_userid"`
+}
+
+// reqExternalContactGet 获取客户详情
+type reqExternalContactGet struct {
+	ExternalUserID string `json:"external_userid"`
+}
+
+var _ urlValuer = reqExternalContactGet{}
+
+func (x reqExternalContactGet) intoURLValues() url.Values {
+	return url.Values{
+		"external_userid": {x.ExternalUserID},
+	}
+}
+
+// respExternalContactGet 获取客户详情
+type respExternalContactGet struct {
+	respCommon
+	ExternalContactInfo
+}
+
+// ExternalContactInfo 外部联系人信息
+type ExternalContactInfo struct {
+	ExternalContact ExternalContact `json:"external_contact"`
+	FollowUser      []FollowUser    `json:"follow_user"`
+}
+
 // ExternalContactBatchInfo 外部联系人信息
 type ExternalContactBatchInfo struct {
 	ExternalContact ExternalContact `json:"external_contact"`

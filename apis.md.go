@@ -69,3 +69,17 @@ func (c *QyWechatSystemApp) execExternalContactBatchList(req reqExternalContactB
 
 	return resp, nil
 }
+
+// execExternalContactGet 获取客户详情
+func (c *QyWechatSystemApp) execExternalContactGet(req reqExternalContactGet) (respExternalContactGet, error) {
+	var resp respExternalContactGet
+	err := c.executeQyapiGet("/cgi-bin/externalcontact/get", req, &resp, true)
+	if err != nil {
+		return respExternalContactGet{}, err
+	}
+	if bizErr := resp.TryIntoErr(); bizErr != nil {
+		return respExternalContactGet{}, bizErr
+	}
+
+	return resp, nil
+}
