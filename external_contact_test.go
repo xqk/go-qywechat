@@ -22,6 +22,8 @@ func TestQyWechatSystemApp_BatchListExternalContact(t *testing.T) {
 		for _, v := range resp.Result {
 			fmt.Println(v.ExternalContact)
 		}
+
+		app.SpawnAccessTokenRefresher()
 	})
 
 	convey.Convey("获取客户详情", t, func() {

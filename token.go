@@ -3,13 +3,15 @@ package go_qywechat
 import (
 	"context"
 	"fmt"
+	"github.com/cenkalti/backoff/v4"
 	"sync"
 	"time"
 )
 
 type tokenInfo struct {
-	token     string
-	expiresIn time.Duration
+	token          string
+	expiresIn      time.Duration
+	expirationTime time.Time
 }
 
 type token struct {
@@ -24,6 +26,7 @@ func (c *QyWechatSystemApp) getAccessToken() (tokenInfo, error) {
 	var expiresIn time.Duration
 
 	cacheKey := c.getAccessTokenCacheKey()
+	currentTime := time.Now()
 
 	// 从缓存中获取accessToken
 	if c.cache != nil {
@@ -67,7 +70,9 @@ func (c *QyWechatSystemApp) getAccessToken() (tokenInfo, error) {
 		}
 	}
 
-	return tokenInfo{token: accessToken, expiresIn: expiresIn}, nil
+	expirationTime := currentTime.Add(expiresIn * time.Second)
+
+	return tokenInfo{token: accessToken, expiresIn: expiresIn, expirationTime: expirationTime}, nil
 }
 
 func (c *QyWechatSystemApp) getAccessTokenCacheKey() string {
@@ -79,6 +84,7 @@ func (c *QyWechatApp) getAccessToken() (tokenInfo, error) {
 	var expiresIn time.Duration
 
 	cacheKey := c.getAccessTokenCacheKey()
+	currentTime := time.Now()
 
 	// 从缓存中获取accessToken
 	if c.cache != nil {
@@ -122,11 +128,45 @@ func (c *QyWechatApp) getAccessToken() (tokenInfo, error) {
 		}
 	}
 
-	return tokenInfo{token: accessToken, expiresIn: expiresIn}, nil
+	expirationTime := currentTime.Add(expiresIn * time.Second)
+
+	return tokenInfo{token: accessToken, expiresIn: expiresIn, expirationTime: expirationTime}, nil
 }
 
 func (c *QyWechatApp) getAccessTokenCacheKey() string {
 	return fmt.Sprintf("qywechat:accessToken:%s:%d", c.QyWechat.CorpID, c.AgentID)
+}
+
+// SpawnAccessTokenRefresher 启动该 app 的 access token 刷新 goroutine
+//
+// NOTE: 该 goroutine 本身没有 keep-alive 逻辑，需要自助保活
+func (c *QyWechatSystemApp) SpawnAccessTokenRefresher() {
+	ctx := context.Background()
+	c.SpawnAccessTokenRefresherWithContext(ctx)
+}
+
+// SpawnAccessTokenRefresherWithContext 启动该 app 的 access token 刷新 goroutine
+// 可以通过 context cancellation 停止此 goroutine
+//
+// NOTE: 该 goroutine 本身没有 keep-alive 逻辑，需要自助保活
+func (c *QyWechatSystemApp) SpawnAccessTokenRefresherWithContext(ctx context.Context) {
+	go c.accessToken.tokenRefresher(ctx)
+}
+
+// SpawnAccessTokenRefresher 启动该 app 的 access token 刷新 goroutine
+//
+// NOTE: 该 goroutine 本身没有 keep-alive 逻辑，需要自助保活
+func (c *QyWechatApp) SpawnAccessTokenRefresher() {
+	ctx := context.Background()
+	c.SpawnAccessTokenRefresherWithContext(ctx)
+}
+
+// SpawnAccessTokenRefresherWithContext 启动该 app 的 access token 刷新 goroutine
+// 可以通过 context cancellation 停止此 goroutine
+//
+// NOTE: 该 goroutine 本身没有 keep-alive 逻辑，需要自助保活
+func (c *QyWechatApp) SpawnAccessTokenRefresherWithContext(ctx context.Context) {
+	go c.accessToken.tokenRefresher(ctx)
 }
 
 // getJSAPITicket 获取 JSAPI_ticket
@@ -157,6 +197,7 @@ func (t *token) syncToken() error {
 
 	t.token = get.token
 	t.expiresIn = get.expiresIn * time.Second
+	t.expirationTime = get.expirationTime
 	t.lastRefresh = time.Now()
 	return nil
 }
@@ -164,7 +205,7 @@ func (t *token) syncToken() error {
 func (t *token) getToken() string {
 	// intensive mutex juggling action
 	t.mutex.RLock()
-	if t.token == "" {
+	if t.token == "" || time.Now().After(t.expirationTime) {
 		t.mutex.RUnlock() // RWMutex doesn't like recursive locking
 		// TODO: what to do with the possible error?
 		_ = t.syncToken()
@@ -173,6 +214,31 @@ func (t *token) getToken() string {
 	tokenToUse := t.token
 	t.mutex.RUnlock()
 	return tokenToUse
+}
+
+func (t *token) tokenRefresher(ctx context.Context) {
+	const refreshTimeWindow = 30 * time.Minute
+	const minRefreshDuration = 5 * time.Second
+
+	var waitDuration time.Duration = 0
+	for {
+		select {
+		case <-time.After(waitDuration):
+			retryer := backoff.WithContext(backoff.NewExponentialBackOff(), ctx)
+			if err := backoff.Retry(t.syncToken, retryer); err != nil {
+				// TODO: logging
+				_ = err
+			}
+
+			waitUntilTime := t.lastRefresh.Add(t.expiresIn).Add(-refreshTimeWindow)
+			waitDuration = time.Until(waitUntilTime)
+			if waitDuration < minRefreshDuration {
+				waitDuration = minRefreshDuration
+			}
+		case <-ctx.Done():
+			return
+		}
+	}
 }
 
 func (t *token) setGetTokenFunc(f func() (tokenInfo, error)) {
