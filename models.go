@@ -148,3 +148,16 @@ type respExternalContactBatchList struct {
 	NextCursor          string                     `json:"next_cursor"`
 	ExternalContactList []ExternalContactBatchInfo `json:"external_contact_list"`
 }
+
+// reqExternalContactList 获取客户列表
+type reqExternalContactList struct {
+	UserID string `json:"userid"`
+}
+
+var _ urlValuer = reqExternalContactList{}
+
+func (x reqExternalContactList) intoURLValues() url.Values {
+	return url.Values{
+		"userid": {x.UserID},
+	}
+}

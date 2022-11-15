@@ -83,3 +83,17 @@ func (c *QyWechatSystemApp) execExternalContactGet(req reqExternalContactGet) (r
 
 	return resp, nil
 }
+
+// execExternalContactList 获取客户列表
+func (c *QyWechatSystemApp) execExternalContactList(req reqExternalContactList) (respExternalContactList, error) {
+	var resp respExternalContactList
+	err := c.executeQyapiGet("/cgi-bin/externalcontact/list", req, &resp, true)
+	if err != nil {
+		return respExternalContactList{}, err
+	}
+	if bizErr := resp.TryIntoErr(); bizErr != nil {
+		return respExternalContactList{}, bizErr
+	}
+
+	return resp, nil
+}

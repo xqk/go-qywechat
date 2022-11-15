@@ -35,3 +35,14 @@ func (c *QyWechatSystemApp) GetExternalContact(externalUserID string) (*External
 	}
 	return &resp.ExternalContactInfo, nil
 }
+
+// ListExternalContact 获取客户列表
+func (c *QyWechatSystemApp) ListExternalContact(userID string) ([]string, error) {
+	resp, err := c.execExternalContactList(reqExternalContactList{
+		UserID: userID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return resp.ExternalUserID, nil
+}

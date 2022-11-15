@@ -33,4 +33,12 @@ func TestQyWechatSystemApp_BatchListExternalContact(t *testing.T) {
 		})
 		fmt.Println(resp)
 	})
+
+	convey.Convey("获取客户列表", t, func() {
+		resp, err := app.ListExternalContact("xiaqiankun")
+		convey.Convey("", func() {
+			convey.So(err, convey.ShouldBeNil)
+		})
+		fmt.Println(resp)
+	})
 }
