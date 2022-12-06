@@ -56,6 +56,20 @@ func (c *QyWechatApp) execGetJSAPITicketAgentConfig(req reqJSAPITicketAgentConfi
 	return resp, nil
 }
 
+// execJSCode2Session 临时登录凭证校验code2Session
+func (c *QyWechatApp) execJSCode2Session(req reqJSCode2Session) (respJSCode2Session, error) {
+	var resp respJSCode2Session
+	err := c.executeQyapiGet("/cgi-bin/miniprogram/jscode2session", req, &resp, true)
+	if err != nil {
+		return respJSCode2Session{}, err
+	}
+	if bizErr := resp.TryIntoErr(); bizErr != nil {
+		return respJSCode2Session{}, bizErr
+	}
+
+	return resp, nil
+}
+
 // execExternalContactBatchList 批量获取客户详情
 func (c *QyWechatSystemApp) execExternalContactBatchList(req reqExternalContactBatchList) (respExternalContactBatchList, error) {
 	var resp respExternalContactBatchList
