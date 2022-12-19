@@ -46,3 +46,13 @@ func (c *QyWechatSystemApp) ListExternalContact(userID string) ([]string, error)
 	}
 	return resp.ExternalUserID, nil
 }
+
+// ExternalContactListFollowUser 获取配置了客户联系功能的成员列表
+func (c *QyWechatSystemApp) ExternalContactListFollowUser() (*ExternalContactFollowUserList, error) {
+	resp, err := c.execListFollowUserExternalContact(reqListFollowUserExternalContact{})
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp.ExternalContactFollowUserList, nil
+}

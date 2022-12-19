@@ -111,3 +111,17 @@ func (c *QyWechatSystemApp) execExternalContactList(req reqExternalContactList) 
 
 	return resp, nil
 }
+
+// execListFollowUserExternalContact 获取配置了客户联系功能的成员列表
+func (c *QyWechatSystemApp) execListFollowUserExternalContact(req reqListFollowUserExternalContact) (respListFollowUserExternalContact, error) {
+	var resp respListFollowUserExternalContact
+	err := c.executeQyapiGet("/cgi-bin/externalcontact/get_follow_user_list", req, &resp, true)
+	if err != nil {
+		return respListFollowUserExternalContact{}, err
+	}
+	if bizErr := resp.TryIntoErr(); bizErr != nil {
+		return respListFollowUserExternalContact{}, bizErr
+	}
+
+	return resp, nil
+}

@@ -188,3 +188,17 @@ type JSCodeSession struct {
 	UserID     string `json:"userid"`
 	SessionKey string `json:"session_key"`
 }
+
+type reqListFollowUserExternalContact struct {
+}
+
+var _ urlValuer = reqListFollowUserExternalContact{}
+
+func (x reqListFollowUserExternalContact) intoURLValues() url.Values {
+	return url.Values{}
+}
+
+type respListFollowUserExternalContact struct {
+	respCommon
+	ExternalContactFollowUserList
+}
