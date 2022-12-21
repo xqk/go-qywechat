@@ -125,3 +125,73 @@ func (c *QyWechatSystemApp) execListFollowUserExternalContact(req reqListFollowU
 
 	return resp, nil
 }
+
+// execUserGet 读取成员
+func (c *QyWechatSystemApp) execUserGet(req reqUserGet) (respUserGet, error) {
+	var resp respUserGet
+	err := c.executeQyapiGet("/cgi-bin/user/get", req, &resp, true)
+	if err != nil {
+		return respUserGet{}, err
+	}
+	if bizErr := resp.TryIntoErr(); bizErr != nil {
+		return respUserGet{}, bizErr
+	}
+
+	return resp, nil
+}
+
+// execUserList 获取部门成员详情
+func (c *QyWechatSystemApp) execUserList(req reqUserList) (respUserList, error) {
+	var resp respUserList
+	err := c.executeQyapiGet("/cgi-bin/user/list", req, &resp, true)
+	if err != nil {
+		return respUserList{}, err
+	}
+	if bizErr := resp.TryIntoErr(); bizErr != nil {
+		return respUserList{}, bizErr
+	}
+
+	return resp, nil
+}
+
+// execUserIDByMobile 手机号获取userid
+func (c *QyWechatSystemApp) execUserIDByMobile(req reqUserIDByMobile) (respUserIDByMobile, error) {
+	var resp respUserIDByMobile
+	err := c.executeQyapiJSONPost("/cgi-bin/user/getuserid", req, &resp, true)
+	if err != nil {
+		return respUserIDByMobile{}, err
+	}
+	if bizErr := resp.TryIntoErr(); bizErr != nil {
+		return respUserIDByMobile{}, bizErr
+	}
+
+	return resp, nil
+}
+
+// execDeptList 获取部门列表
+func (c *QyWechatSystemApp) execDeptList(req reqDeptList) (respDeptList, error) {
+	var resp respDeptList
+	err := c.executeQyapiGet("/cgi-bin/department/list", req, &resp, true)
+	if err != nil {
+		return respDeptList{}, err
+	}
+	if bizErr := resp.TryIntoErr(); bizErr != nil {
+		return respDeptList{}, bizErr
+	}
+
+	return resp, nil
+}
+
+// execUserInfoGet 获取访问用户身份
+func (c *QyWechatSystemApp) execUserInfoGet(req reqUserInfoGet) (respUserInfoGet, error) {
+	var resp respUserInfoGet
+	err := c.executeQyapiGet("/cgi-bin/user/getuserinfo", req, &resp, true)
+	if err != nil {
+		return respUserInfoGet{}, err
+	}
+	if bizErr := resp.TryIntoErr(); bizErr != nil {
+		return respUserInfoGet{}, bizErr
+	}
+
+	return resp, nil
+}

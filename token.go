@@ -101,7 +101,7 @@ func (c *QyWechatApp) getAccessToken() (tokenInfo, error) {
 			if err != nil {
 				return tokenInfo{}, err
 			}
-			expiresIn = time.Duration(ttlSec * int64(time.Second))
+			expiresIn = time.Duration(ttlSec)
 		}
 	}
 
@@ -116,12 +116,12 @@ func (c *QyWechatApp) getAccessToken() (tokenInfo, error) {
 		}
 
 		accessToken = get.AccessToken
-		expiresIn = time.Duration(get.ExpiresInSecs * int64(time.Second))
+		expiresIn = time.Duration(get.ExpiresInSecs)
 
 		// 设置accessToken缓存
 		if c.cache != nil {
 			var ctx = context.Background()
-			_, err = c.cache.SetNX(ctx, cacheKey, accessToken, expiresIn).Result()
+			_, err = c.cache.SetNX(ctx, cacheKey, accessToken, expiresIn*time.Second).Result()
 			if err != nil {
 				return tokenInfo{}, err
 			}
