@@ -9,10 +9,8 @@ import (
 
 type dummyRxMessageHandler struct{}
 
-var _ goqywechat.RxMessageHandler = dummyRxMessageHandler{}
-
 // OnIncomingMessage 一条消息到来时的回调。
-func (dummyRxMessageHandler) OnIncomingMessage(msg *goqywechat.RxMessage) error {
+func (m *dummyRxMessageHandler) OnIncomingMessage(msg *goqywechat.RxMessage) error {
 	// You can do much more!
 	fmt.Printf("传入消息: %s\n", msg)
 	return nil
@@ -25,7 +23,7 @@ func main() {
 
 	flag.Parse()
 
-	hh, err := goqywechat.NewHTTPHandler(*pToken, *pEncodingAESKey, dummyRxMessageHandler{})
+	hh, err := goqywechat.NewHTTPHandler(*pToken, *pEncodingAESKey, &dummyRxMessageHandler{})
 	if err != nil {
 		panic(err)
 	}
