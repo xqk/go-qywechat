@@ -56,3 +56,91 @@ func (c *QyWechatSystemApp) ExternalContactListFollowUser() (*ExternalContactFol
 
 	return &resp.ExternalContactFollowUserList, nil
 }
+
+// ExternalContactAddContact 配置客户联系「联系我」方式
+func (c *QyWechatSystemApp) ExternalContactAddContact(t int, scene int, style int, remark string, skipVerify bool, state string, user []string, party []int, isTemp bool, expiresIn int, chatExpiresIn int, unionID string, conclusions Conclusions) (*ExternalContactAddContact, error) {
+	resp, err := c.execAddContactExternalContact(
+		reqAddContactExternalContact{
+			ExternalContactWay{
+				Type:          t,
+				Scene:         scene,
+				Style:         style,
+				Remark:        remark,
+				SkipVerify:    skipVerify,
+				State:         state,
+				User:          user,
+				Party:         party,
+				IsTemp:        isTemp,
+				ExpiresIn:     expiresIn,
+				ChatExpiresIn: chatExpiresIn,
+				UnionID:       unionID,
+				Conclusions:   conclusions,
+			},
+		})
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp.ExternalContactAddContact, nil
+}
+
+// ExternalContactGetContactWay 获取企业已配置的「联系我」方式
+func (c *QyWechatSystemApp) ExternalContactGetContactWay(configID string) (*ExternalContactContactWay, error) {
+	resp, err := c.execGetContactWayExternalContact(reqGetContactWayExternalContact{ConfigID: configID})
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp.ContactWay, nil
+}
+
+// ExternalContactListContactWayChat 获取企业已配置的「联系我」列表
+func (c *QyWechatSystemApp) ExternalContactListContactWayChat(startTime int, endTime int, cursor string, limit int) (*ExternalContactListContactWayChat, error) {
+	resp, err := c.execListContactWayChatExternalContact(reqListContactWayExternalContact{
+		StartTime: startTime,
+		EndTime:   endTime,
+		Cursor:    cursor,
+		Limit:     limit,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp.ExternalContactListContactWayChat, nil
+}
+
+// ExternalContactUpdateContactWay 更新企业已配置的「联系我」成员配置
+func (c *QyWechatSystemApp) ExternalContactUpdateContactWay(configID string, remark string, skipVerify bool, style int, state string, user []string, party []int, expiresIn int, chatExpiresIn int, unionid string, conclusions Conclusions) error {
+	_, err := c.execUpdateContactWayExternalContact(reqUpdateContactWayExternalContact{
+		ConfigID:      configID,
+		Remark:        remark,
+		SkipVerify:    skipVerify,
+		Style:         style,
+		State:         state,
+		User:          user,
+		Party:         party,
+		ExpiresIn:     expiresIn,
+		ChatExpiresIn: chatExpiresIn,
+		UnionID:       unionid,
+		Conclusions:   conclusions,
+	})
+
+	return err
+}
+
+// ExternalContactDelContactWay 删除企业已配置的「联系我」方式
+func (c *QyWechatSystemApp) ExternalContactDelContactWay(configID string) error {
+	_, err := c.execDelContactWayExternalContact(reqDelContactWayExternalContact{ConfigID: configID})
+
+	return err
+}
+
+// ExternalContactCloseTempChat 结束临时会话
+func (c *QyWechatSystemApp) ExternalContactCloseTempChat(userID, externalUserID string) error {
+	_, err := c.execCloseTempChatExternalContact(reqCloseTempChatExternalContact{
+		UserID:         userID,
+		ExternalUserID: externalUserID,
+	})
+
+	return err
+}

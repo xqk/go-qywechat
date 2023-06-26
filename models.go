@@ -204,6 +204,130 @@ type respListFollowUserExternalContact struct {
 	ExternalContactFollowUserList
 }
 
+type reqAddContactExternalContact struct {
+	ExternalContactWay
+}
+
+var _ bodyer = reqAddContactExternalContact{}
+
+func (x reqAddContactExternalContact) intoBody() ([]byte, error) {
+	body, err := json.Marshal(x)
+	if err != nil {
+		return nil, err
+	}
+	return body, nil
+}
+
+type respAddContactExternalContact struct {
+	respCommon
+	ExternalContactAddContact
+}
+
+type ExternalContactAddContact struct {
+	ConfigID string `json:"config_id"`
+	QRCode   string `json:"qr_code"`
+}
+
+type reqGetContactWayExternalContact struct {
+	ConfigID string `json:"config_id"`
+}
+
+var _ bodyer = reqGetContactWayExternalContact{}
+
+func (x reqGetContactWayExternalContact) intoBody() ([]byte, error) {
+	body, err := json.Marshal(x)
+	if err != nil {
+		return nil, err
+	}
+	return body, nil
+}
+
+type respGetContactWayExternalContact struct {
+	respCommon
+	ContactWay ExternalContactContactWay `json:"contact_way"`
+}
+
+type ExternalContactContactWay struct {
+	ConfigID string `json:"config_id"`
+	QRCode   string `json:"qr_code"`
+	ExternalContactWay
+}
+
+var _ bodyer = reqListContactWayExternalContact{}
+
+func (x reqListContactWayExternalContact) intoBody() ([]byte, error) {
+	body, err := json.Marshal(x)
+	if err != nil {
+		return nil, err
+	}
+	return body, nil
+}
+
+type respListContactWayChatExternalContact struct {
+	respCommon
+	ExternalContactListContactWayChat
+}
+
+type ExternalContactListContactWayChat struct {
+	NextCursor string       `json:"next_cursor"`
+	ContactWay []contactWay `json:"contact_way"`
+}
+
+type contactWay struct {
+	ConfigID string `json:"config_id"`
+}
+
+var _ bodyer = reqUpdateContactWayExternalContact{}
+
+func (x reqUpdateContactWayExternalContact) intoBody() ([]byte, error) {
+	body, err := json.Marshal(x)
+	if err != nil {
+		return nil, err
+	}
+	return body, nil
+}
+
+type respUpdateContactWayExternalContact struct {
+	respCommon
+}
+
+type reqDelContactWayExternalContact struct {
+	ConfigID string `json:"config_id"`
+}
+
+var _ bodyer = reqDelContactWayExternalContact{}
+
+func (x reqDelContactWayExternalContact) intoBody() ([]byte, error) {
+	body, err := json.Marshal(x)
+	if err != nil {
+		return nil, err
+	}
+	return body, nil
+}
+
+type respDelContactWayExternalContact struct {
+	respCommon
+}
+
+type reqCloseTempChatExternalContact struct {
+	UserID         string `json:"userid"`
+	ExternalUserID string `json:"external_userid"`
+}
+
+var _ bodyer = reqCloseTempChatExternalContact{}
+
+func (x reqCloseTempChatExternalContact) intoBody() ([]byte, error) {
+	body, err := json.Marshal(x)
+	if err != nil {
+		return nil, err
+	}
+	return body, nil
+}
+
+type respCloseTempChatExternalContact struct {
+	respCommon
+}
+
 type reqUserGet struct {
 	UserID string
 }

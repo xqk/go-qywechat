@@ -126,6 +126,90 @@ func (c *QyWechatSystemApp) execListFollowUserExternalContact(req reqListFollowU
 	return resp, nil
 }
 
+// execAddContactExternalContact 配置客户联系「联系我」方式
+func (c *QyWechatSystemApp) execAddContactExternalContact(req reqAddContactExternalContact) (respAddContactExternalContact, error) {
+	var resp respAddContactExternalContact
+	err := c.executeQyapiJSONPost("/cgi-bin/externalcontact/add_contact_way", req, &resp, true)
+	if err != nil {
+		return respAddContactExternalContact{}, err
+	}
+	if bizErr := resp.TryIntoErr(); bizErr != nil {
+		return respAddContactExternalContact{}, bizErr
+	}
+
+	return resp, nil
+}
+
+// execGetContactWayExternalContact 获取企业已配置的「联系我」方式
+func (c *QyWechatSystemApp) execGetContactWayExternalContact(req reqGetContactWayExternalContact) (respGetContactWayExternalContact, error) {
+	var resp respGetContactWayExternalContact
+	err := c.executeQyapiJSONPost("/cgi-bin/externalcontact/get_contact_way", req, &resp, true)
+	if err != nil {
+		return respGetContactWayExternalContact{}, err
+	}
+	if bizErr := resp.TryIntoErr(); bizErr != nil {
+		return respGetContactWayExternalContact{}, bizErr
+	}
+
+	return resp, nil
+}
+
+// execListContactWayChatExternalContact 获取企业已配置的「联系我」列表
+func (c *QyWechatSystemApp) execListContactWayChatExternalContact(req reqListContactWayExternalContact) (respListContactWayChatExternalContact, error) {
+	var resp respListContactWayChatExternalContact
+	err := c.executeQyapiJSONPost("/cgi-bin/externalcontact/list_contact_way", req, &resp, true)
+	if err != nil {
+		return respListContactWayChatExternalContact{}, err
+	}
+	if bizErr := resp.TryIntoErr(); bizErr != nil {
+		return respListContactWayChatExternalContact{}, bizErr
+	}
+
+	return resp, nil
+}
+
+// execUpdateContactWayExternalContact 更新企业已配置的「联系我」成员配置
+func (c *QyWechatSystemApp) execUpdateContactWayExternalContact(req reqUpdateContactWayExternalContact) (respUpdateContactWayExternalContact, error) {
+	var resp respUpdateContactWayExternalContact
+	err := c.executeQyapiJSONPost("/cgi-bin/externalcontact/update_contact_way", req, &resp, true)
+	if err != nil {
+		return respUpdateContactWayExternalContact{}, err
+	}
+	if bizErr := resp.TryIntoErr(); bizErr != nil {
+		return respUpdateContactWayExternalContact{}, bizErr
+	}
+
+	return resp, nil
+}
+
+// execDelContactWayExternalContact 删除企业已配置的「联系我」方式
+func (c *QyWechatSystemApp) execDelContactWayExternalContact(req reqDelContactWayExternalContact) (respDelContactWayExternalContact, error) {
+	var resp respDelContactWayExternalContact
+	err := c.executeQyapiJSONPost("/cgi-bin/externalcontact/del_contact_way", req, &resp, true)
+	if err != nil {
+		return respDelContactWayExternalContact{}, err
+	}
+	if bizErr := resp.TryIntoErr(); bizErr != nil {
+		return respDelContactWayExternalContact{}, bizErr
+	}
+
+	return resp, nil
+}
+
+// execCloseTempChatExternalContact 结束临时会话
+func (c *QyWechatSystemApp) execCloseTempChatExternalContact(req reqCloseTempChatExternalContact) (respCloseTempChatExternalContact, error) {
+	var resp respCloseTempChatExternalContact
+	err := c.executeQyapiJSONPost("/cgi-bin/externalcontact/close_temp_chat", req, &resp, true)
+	if err != nil {
+		return respCloseTempChatExternalContact{}, err
+	}
+	if bizErr := resp.TryIntoErr(); bizErr != nil {
+		return respCloseTempChatExternalContact{}, bizErr
+	}
+
+	return resp, nil
+}
+
 // execUserGet 读取成员
 func (c *QyWechatSystemApp) execUserGet(req reqUserGet) (respUserGet, error) {
 	var resp respUserGet
