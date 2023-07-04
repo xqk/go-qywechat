@@ -20,6 +20,8 @@ type rxMessageCommon struct {
 	Event EventType `xml:"Event"`
 	// ChangeType 变更类型 Event为change_external_contact存在
 	ChangeType ChangeType `xml:"ChangeType"`
+	// WelcomeCode 欢迎语code，可用于发送欢迎语
+	WelcomeCode ChangeType `xml:"WelcomeCode"`
 }
 
 // MessageType 消息类型
