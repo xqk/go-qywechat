@@ -23,6 +23,8 @@ type RxMessage struct {
 	Event EventType
 	// ChangeType 变更类型 Event为change_external_contact存在
 	ChangeType ChangeType
+	// WelcomeCode 欢迎语code，可用于发送欢迎语
+	WelcomeCode string
 
 	extras messageKind
 }
