@@ -51,13 +51,14 @@ func fromEnvelope(body []byte) (*RxMessage, error) {
 		sendTime := time.Unix(common.CreateTime, 0) // in time.Local
 
 		obj = RxMessage{
-			FromUserID: common.FromUserName,
-			SendTime:   sendTime,
-			MsgType:    common.MsgType,
-			MsgID:      common.MsgID,
-			AgentID:    common.AgentID,
-			Event:      common.Event,
-			ChangeType: common.ChangeType,
+			FromUserID:  common.FromUserName,
+			SendTime:    sendTime,
+			MsgType:     common.MsgType,
+			MsgID:       common.MsgID,
+			AgentID:     common.AgentID,
+			Event:       common.Event,
+			ChangeType:  common.ChangeType,
+			WelcomeCode: common.WelcomeCode,
 
 			extras: extras,
 		}
@@ -71,7 +72,7 @@ func (m *RxMessage) String() string {
 
 	_, _ = fmt.Fprintf(
 		&sb,
-		"RxMessage { FromUserID: %#v, SendTime: %d, MsgType: %#v, MsgID: %d, AgentID: %d, Event: %#v, ChangeType: %#v, ",
+		"RxMessage { FromUserID: %#v, SendTime: %d, MsgType: %#v, MsgID: %d, AgentID: %d, Event: %#v, ChangeType: %#v, WelcomeCode: %#v, ",
 		m.FromUserID,
 		m.SendTime.UnixNano(),
 		m.MsgType,
@@ -79,6 +80,7 @@ func (m *RxMessage) String() string {
 		m.AgentID,
 		m.Event,
 		m.ChangeType,
+		m.WelcomeCode,
 	)
 
 	m.extras.formatInto(&sb)
