@@ -46,8 +46,8 @@ func TestQyWechatSystemApp_BatchListExternalContact(t *testing.T) {
 }
 
 func TestQyWechatSystemApp_ExternalContactAddContact(t *testing.T) {
-	corpId := "wwc40124f94744b885"
-	appSecret := "QyTZ6FsXrMwnDv2PgLNIHNSJuJgj0k4OI8xVfTgLKOo"
+	corpId := "ww38723bfa8894c18f"
+	appSecret := "2UleL58-Zk2tYdMVicPj8_XhRjDJlhHDyhDCllLos9k"
 
 	proxy := func(_ *http.Request) (*url.URL, error) {
 		return url.Parse("socks5://192.168.0.17:1082")
@@ -67,9 +67,9 @@ func TestQyWechatSystemApp_ExternalContactAddContact(t *testing.T) {
 	typ := 1
 	scene := 2
 	style := 1
-	remark := ""
-	state := "A:oDOX9t7SsPOzc_ERRttAGpcHNlXw"
-	user := []string{"WuLin"}
+	remark := "zhukePro"
+	state := "zhukePro-dev-xqk"
+	user := []string{"sean"}
 	party := []int{}
 	expiresIn := 0
 	chatExpiresIn := 0
@@ -93,8 +93,8 @@ func TestQyWechatSystemApp_ExternalContactAddContact(t *testing.T) {
 }
 
 func TestQyWechatSystemApp_ExternalContactGetContactWay(t *testing.T) {
-	corpId := "wwc40124f94744b885"
-	appSecret := "QyTZ6FsXrMwnDv2PgLNIHNSJuJgj0k4OI8xVfTgLKOo"
+	corpId := "ww38723bfa8894c18f"
+	appSecret := "2UleL58-Zk2tYdMVicPj8_XhRjDJlhHDyhDCllLos9k"
 
 	proxy := func(_ *http.Request) (*url.URL, error) {
 		return url.Parse("socks5://192.168.0.17:1082")
@@ -111,7 +111,7 @@ func TestQyWechatSystemApp_ExternalContactGetContactWay(t *testing.T) {
 	)
 	app := client.WithSystemApp(appSecret)
 
-	way, err := app.ExternalContactGetContactWay("656f09af1d109294de3dc2aad03ad046")
+	way, err := app.ExternalContactGetContactWay("2ecbddec3ff74b9785722e0b020b7584")
 	if err != nil {
 		t.Error(err)
 		return
@@ -121,8 +121,8 @@ func TestQyWechatSystemApp_ExternalContactGetContactWay(t *testing.T) {
 }
 
 func TestQyWechatSystemApp_ExternalContactDelContactWay(t *testing.T) {
-	corpId := "wwc40124f94744b885"
-	appSecret := "QyTZ6FsXrMwnDv2PgLNIHNSJuJgj0k4OI8xVfTgLKOo"
+	corpId := "ww38723bfa8894c18f"
+	appSecret := "2UleL58-Zk2tYdMVicPj8_XhRjDJlhHDyhDCllLos9k"
 
 	proxy := func(_ *http.Request) (*url.URL, error) {
 		return url.Parse("socks5://192.168.0.17:1082")
@@ -139,7 +139,7 @@ func TestQyWechatSystemApp_ExternalContactDelContactWay(t *testing.T) {
 	)
 	app := client.WithSystemApp(appSecret)
 
-	err := app.ExternalContactDelContactWay("656f09af1d109294de3dc2aad03ad046")
+	err := app.ExternalContactDelContactWay("2ecbddec3ff74b9785722e0b020b7584")
 	if err != nil {
 		t.Error(err)
 		return
