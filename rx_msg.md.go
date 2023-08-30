@@ -90,6 +90,9 @@ const ChangeTypeCreateUser ChangeType = "create_user"
 // ChangeTypeUpdateUser 更新成员事件
 const ChangeTypeUpdateUser ChangeType = "update_user"
 
+// ChangeTypeDeleteUser 删除成员事件
+const ChangeTypeDeleteUser ChangeType = "delete_user"
+
 // EventTypeAppMenuClick 点击菜单
 const EventTypeAppMenuClick = "click"
 

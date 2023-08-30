@@ -135,6 +135,14 @@ func extractMessageExtras(common rxMessageCommon, body []byte) (messageKind, err
 					return nil, err
 				}
 				return &x, nil
+
+			case ChangeTypeDeleteUser:
+				var x rxEventChangeTypeUpdateUser
+				err := xml.Unmarshal(body, &x)
+				if err != nil {
+					return nil, err
+				}
+				return &x, nil
 			default:
 				return nil, fmt.Errorf("unknown change type '%s'", common.ChangeType)
 			}
@@ -148,6 +156,13 @@ func extractMessageExtras(common rxMessageCommon, body []byte) (messageKind, err
 		case EventTypeChangeContact:
 			switch common.ChangeType {
 			case ChangeTypeUpdateUser:
+				var x rxEventChangeTypeUpdateUser
+				err := xml.Unmarshal(body, &x)
+				if err != nil {
+					return nil, err
+				}
+				return &x, nil
+			case ChangeTypeDeleteUser:
 				var x rxEventChangeTypeUpdateUser
 				err := xml.Unmarshal(body, &x)
 				if err != nil {
