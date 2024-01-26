@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type tokenInfo struct {
+type TokenInfo struct {
 	token          string
 	expiresIn      time.Duration
 	expirationTime time.Time
@@ -16,12 +16,12 @@ type tokenInfo struct {
 
 type token struct {
 	mutex *sync.RWMutex
-	tokenInfo
+	TokenInfo
 	lastRefresh  time.Time
-	getTokenFunc func() (tokenInfo, error)
+	getTokenFunc func() (TokenInfo, error)
 }
 
-func (c *QyWechatSystemApp) GetAccessToken() (tokenInfo, error) {
+func (c *QyWechatSystemApp) GetAccessToken() (TokenInfo, error) {
 	var accessToken string
 	var expiresIn time.Duration
 
@@ -34,14 +34,14 @@ func (c *QyWechatSystemApp) GetAccessToken() (tokenInfo, error) {
 		// 获取缓存剩余时间
 		ttl, err := c.cache.TTL(ctx, cacheKey).Result()
 		if err != nil {
-			return tokenInfo{}, err
+			return TokenInfo{}, err
 		}
 
 		ttlSec := int64(ttl.Seconds())
 		if ttlSec > 0 {
 			accessToken, err = c.cache.Get(ctx, cacheKey).Result()
 			if err != nil {
-				return tokenInfo{}, err
+				return TokenInfo{}, err
 			}
 			expiresIn = time.Duration(ttlSec)
 		}
@@ -54,7 +54,7 @@ func (c *QyWechatSystemApp) GetAccessToken() (tokenInfo, error) {
 			CorpSecret: c.AppSecret,
 		})
 		if err != nil {
-			return tokenInfo{}, err
+			return TokenInfo{}, err
 		}
 
 		accessToken = get.AccessToken
@@ -65,21 +65,21 @@ func (c *QyWechatSystemApp) GetAccessToken() (tokenInfo, error) {
 			var ctx = context.Background()
 			_, err = c.cache.SetNX(ctx, cacheKey, accessToken, expiresIn*time.Second).Result()
 			if err != nil {
-				return tokenInfo{}, err
+				return TokenInfo{}, err
 			}
 		}
 	}
 
 	expirationTime := currentTime.Add(expiresIn * time.Second)
 
-	return tokenInfo{token: accessToken, expiresIn: expiresIn, expirationTime: expirationTime}, nil
+	return TokenInfo{token: accessToken, expiresIn: expiresIn, expirationTime: expirationTime}, nil
 }
 
 func (c *QyWechatSystemApp) getAccessTokenCacheKey() string {
 	return fmt.Sprintf("qywechat:accessToken:%s:%s", c.QyWechat.CorpID, c.AppSecret)
 }
 
-func (c *QyWechatApp) GetAccessToken() (tokenInfo, error) {
+func (c *QyWechatApp) GetAccessToken() (TokenInfo, error) {
 	var accessToken string
 	var expiresIn time.Duration
 
@@ -92,14 +92,14 @@ func (c *QyWechatApp) GetAccessToken() (tokenInfo, error) {
 		// 获取缓存剩余时间
 		ttl, err := c.cache.TTL(ctx, cacheKey).Result()
 		if err != nil {
-			return tokenInfo{}, err
+			return TokenInfo{}, err
 		}
 
 		ttlSec := int64(ttl.Seconds())
 		if ttlSec > 0 {
 			accessToken, err = c.cache.Get(ctx, cacheKey).Result()
 			if err != nil {
-				return tokenInfo{}, err
+				return TokenInfo{}, err
 			}
 			expiresIn = time.Duration(ttlSec)
 		}
@@ -112,7 +112,7 @@ func (c *QyWechatApp) GetAccessToken() (tokenInfo, error) {
 			CorpSecret: c.CorpSecret,
 		})
 		if err != nil {
-			return tokenInfo{}, err
+			return TokenInfo{}, err
 		}
 
 		accessToken = get.AccessToken
@@ -123,14 +123,14 @@ func (c *QyWechatApp) GetAccessToken() (tokenInfo, error) {
 			var ctx = context.Background()
 			_, err = c.cache.SetNX(ctx, cacheKey, accessToken, expiresIn*time.Second).Result()
 			if err != nil {
-				return tokenInfo{}, err
+				return TokenInfo{}, err
 			}
 		}
 	}
 
 	expirationTime := currentTime.Add(expiresIn * time.Second)
 
-	return tokenInfo{token: accessToken, expiresIn: expiresIn, expirationTime: expirationTime}, nil
+	return TokenInfo{token: accessToken, expiresIn: expiresIn, expirationTime: expirationTime}, nil
 }
 
 func (c *QyWechatApp) getAccessTokenCacheKey() string {
@@ -170,21 +170,21 @@ func (c *QyWechatApp) SpawnAccessTokenRefresherWithContext(ctx context.Context) 
 }
 
 // getJSAPITicket 获取 JSAPI_ticket
-func (c *QyWechatApp) getJSAPITicket() (tokenInfo, error) {
+func (c *QyWechatApp) getJSAPITicket() (TokenInfo, error) {
 	get, err := c.execGetJSAPITicket(reqJSAPITicket{})
 	if err != nil {
-		return tokenInfo{}, err
+		return TokenInfo{}, err
 	}
-	return tokenInfo{token: get.Ticket, expiresIn: time.Duration(get.ExpiresInSecs)}, nil
+	return TokenInfo{token: get.Ticket, expiresIn: time.Duration(get.ExpiresInSecs)}, nil
 }
 
 // getJSAPITicketAgentConfig 获取 JSAPI_ticket_agent_config
-func (c *QyWechatApp) getJSAPITicketAgentConfig() (tokenInfo, error) {
+func (c *QyWechatApp) getJSAPITicketAgentConfig() (TokenInfo, error) {
 	get, err := c.execGetJSAPITicketAgentConfig(reqJSAPITicketAgentConfig{})
 	if err != nil {
-		return tokenInfo{}, err
+		return TokenInfo{}, err
 	}
-	return tokenInfo{token: get.Ticket, expiresIn: time.Duration(get.ExpiresInSecs)}, nil
+	return TokenInfo{token: get.Ticket, expiresIn: time.Duration(get.ExpiresInSecs)}, nil
 }
 
 func (t *token) syncToken() error {
@@ -241,7 +241,7 @@ func (t *token) tokenRefresher(ctx context.Context) {
 	}
 }
 
-func (t *token) setGetTokenFunc(f func() (tokenInfo, error)) {
+func (t *token) setGetTokenFunc(f func() (TokenInfo, error)) {
 	t.getTokenFunc = f
 }
 
