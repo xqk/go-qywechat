@@ -24,7 +24,7 @@ func TestQyWechat_WithSystemApp(t *testing.T) {
 
 		app := client.WithSystemApp(appSecret)
 		convey.Convey("不能有错", func() {
-			accessToken, err := app.getAccessToken()
+			accessToken, err := app.GetAccessToken()
 			convey.So(err, convey.ShouldBeNil)
 			convey.So(accessToken, convey.ShouldNotBeNil)
 		})

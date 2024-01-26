@@ -74,7 +74,7 @@ func (c *QyWechat) WithSystemApp(appSecret string) *QyWechatSystemApp {
 
 		accessToken: &token{mutex: &sync.RWMutex{}},
 	}
-	app.accessToken.setGetTokenFunc(app.getAccessToken)
+	app.accessToken.setGetTokenFunc(app.GetAccessToken)
 	return &app
 }
 
@@ -90,7 +90,7 @@ func (c *QyWechat) WithApp(corpSecret string, agentID int64) *QyWechatApp {
 		jsapiTicket:            &token{mutex: &sync.RWMutex{}},
 		jsapiTicketAgentConfig: &token{mutex: &sync.RWMutex{}},
 	}
-	app.accessToken.setGetTokenFunc(app.getAccessToken)
+	app.accessToken.setGetTokenFunc(app.GetAccessToken)
 	app.jsapiTicket.setGetTokenFunc(app.getJSAPITicket)
 	app.jsapiTicketAgentConfig.setGetTokenFunc(app.getJSAPITicketAgentConfig)
 	return &app

@@ -21,7 +21,7 @@ type token struct {
 	getTokenFunc func() (tokenInfo, error)
 }
 
-func (c *QyWechatSystemApp) getAccessToken() (tokenInfo, error) {
+func (c *QyWechatSystemApp) GetAccessToken() (tokenInfo, error) {
 	var accessToken string
 	var expiresIn time.Duration
 
@@ -79,7 +79,7 @@ func (c *QyWechatSystemApp) getAccessTokenCacheKey() string {
 	return fmt.Sprintf("qywechat:accessToken:%s:%s", c.QyWechat.CorpID, c.AppSecret)
 }
 
-func (c *QyWechatApp) getAccessToken() (tokenInfo, error) {
+func (c *QyWechatApp) GetAccessToken() (tokenInfo, error) {
 	var accessToken string
 	var expiresIn time.Duration
 
