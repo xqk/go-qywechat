@@ -9,9 +9,9 @@ import (
 )
 
 type TokenInfo struct {
-	token          string
-	expiresIn      time.Duration
-	expirationTime time.Time
+	Token          string
+	ExpiresIn      time.Duration
+	ExpirationTime time.Time
 }
 
 type token struct {
@@ -72,7 +72,7 @@ func (c *QyWechatSystemApp) GetAccessToken() (TokenInfo, error) {
 
 	expirationTime := currentTime.Add(expiresIn * time.Second)
 
-	return TokenInfo{token: accessToken, expiresIn: expiresIn, expirationTime: expirationTime}, nil
+	return TokenInfo{Token: accessToken, ExpiresIn: expiresIn, ExpirationTime: expirationTime}, nil
 }
 
 func (c *QyWechatSystemApp) getAccessTokenCacheKey() string {
@@ -130,7 +130,7 @@ func (c *QyWechatApp) GetAccessToken() (TokenInfo, error) {
 
 	expirationTime := currentTime.Add(expiresIn * time.Second)
 
-	return TokenInfo{token: accessToken, expiresIn: expiresIn, expirationTime: expirationTime}, nil
+	return TokenInfo{Token: accessToken, ExpiresIn: expiresIn, ExpirationTime: expirationTime}, nil
 }
 
 func (c *QyWechatApp) getAccessTokenCacheKey() string {
@@ -175,7 +175,7 @@ func (c *QyWechatApp) getJSAPITicket() (TokenInfo, error) {
 	if err != nil {
 		return TokenInfo{}, err
 	}
-	return TokenInfo{token: get.Ticket, expiresIn: time.Duration(get.ExpiresInSecs)}, nil
+	return TokenInfo{Token: get.Ticket, ExpiresIn: time.Duration(get.ExpiresInSecs)}, nil
 }
 
 // getJSAPITicketAgentConfig 获取 JSAPI_ticket_agent_config
@@ -184,7 +184,7 @@ func (c *QyWechatApp) getJSAPITicketAgentConfig() (TokenInfo, error) {
 	if err != nil {
 		return TokenInfo{}, err
 	}
-	return TokenInfo{token: get.Ticket, expiresIn: time.Duration(get.ExpiresInSecs)}, nil
+	return TokenInfo{Token: get.Ticket, ExpiresIn: time.Duration(get.ExpiresInSecs)}, nil
 }
 
 func (t *token) syncToken() error {
@@ -195,9 +195,9 @@ func (t *token) syncToken() error {
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
 
-	t.token = get.token
-	t.expiresIn = get.expiresIn * time.Second
-	t.expirationTime = get.expirationTime
+	t.Token = get.Token
+	t.ExpiresIn = get.ExpiresIn * time.Second
+	t.ExpirationTime = get.ExpirationTime
 	t.lastRefresh = time.Now()
 	return nil
 }
@@ -205,13 +205,13 @@ func (t *token) syncToken() error {
 func (t *token) getToken() string {
 	// intensive mutex juggling action
 	t.mutex.RLock()
-	if t.token == "" || time.Now().After(t.expirationTime) {
+	if t.Token == "" || time.Now().After(t.ExpirationTime) {
 		t.mutex.RUnlock() // RWMutex doesn't like recursive locking
 		// TODO: what to do with the possible error?
 		_ = t.syncToken()
 		t.mutex.RLock()
 	}
-	tokenToUse := t.token
+	tokenToUse := t.Token
 	t.mutex.RUnlock()
 	return tokenToUse
 }
@@ -230,7 +230,7 @@ func (t *token) tokenRefresher(ctx context.Context) {
 				_ = err
 			}
 
-			waitUntilTime := t.lastRefresh.Add(t.expiresIn).Add(-refreshTimeWindow)
+			waitUntilTime := t.lastRefresh.Add(t.ExpiresIn).Add(-refreshTimeWindow)
 			waitDuration = time.Until(waitUntilTime)
 			if waitDuration < minRefreshDuration {
 				waitDuration = minRefreshDuration
