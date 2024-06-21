@@ -280,8 +280,6 @@ func (c *QyWechatSystemApp) execUserInfoGet(req reqUserInfoGet) (respUserInfoGet
 	return resp, nil
 }
 
-// --
-
 // execExternalContactBatchList 批量获取客户详情
 func (c *QyWechatApp) execExternalContactBatchList(req reqExternalContactBatchList) (respExternalContactBatchList, error) {
 	var resp respExternalContactBatchList

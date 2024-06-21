@@ -145,8 +145,6 @@ func (c *QyWechatSystemApp) ExternalContactCloseTempChat(userID, externalUserID 
 	return err
 }
 
-// ----
-
 // BatchListExternalContact 批量获取客户详情
 func (c *QyWechatApp) BatchListExternalContact(userIDs []string, cursor string, limit int) (*BatchListExternalContactsResp, error) {
 	resp, err := c.execExternalContactBatchList(reqExternalContactBatchList{
