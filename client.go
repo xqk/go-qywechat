@@ -230,3 +230,30 @@ func (c *QyWechatSystemApp) executeQyapiJSONPost(path string, req bodyer, respOb
 
 	return nil
 }
+
+func (c *QyWechatApp) executeQyapiJSONPost(path string, req bodyer, respObj interface{}, withAccessToken bool) error {
+	qyUrl := c.composeQyapiURLWithToken(path, req, withAccessToken)
+	urlStr := qyUrl.String()
+
+	body, err := req.intoBody()
+	if err != nil {
+		// TODO: error_chain
+		return err
+	}
+
+	resp, err := c.opts.HTTP.Post(urlStr, "application/json", bytes.NewReader(body))
+	if err != nil {
+		// TODO: error_chain
+		return err
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+	err = decoder.Decode(respObj)
+	if err != nil {
+		// TODO: error_chain
+		return err
+	}
+
+	return nil
+}
