@@ -8,6 +8,16 @@ import (
 	"time"
 )
 
+// ITokenProvider 是鉴权 token 的外部提供者需要实现的 interface。可用于官方所谓
+// 使用“中控服务”集中提供、刷新 token 的场景。
+//
+// 不同类型的 tokens（如 access token、JSAPI token 等）都是这个 interface 提供，
+// 实现方需要自行掌握 token 的类别，避免在 client 构造函数的选项中传入错误的种类。
+type ITokenProvider interface {
+	// GetToken 取回一个 token。有可能被并发调用。
+	GetToken(context.Context) (string, error)
+}
+
 type TokenInfo struct {
 	Token          string
 	ExpiresIn      time.Duration
@@ -17,8 +27,9 @@ type TokenInfo struct {
 type token struct {
 	mutex *sync.RWMutex
 	TokenInfo
-	lastRefresh  time.Time
-	getTokenFunc func() (TokenInfo, error)
+	lastRefresh      time.Time
+	getTokenFunc     func() (TokenInfo, error)
+	externalProvider ITokenProvider
 }
 
 func (c *QyWechatSystemApp) GetAccessToken() (TokenInfo, error) {
@@ -169,6 +180,11 @@ func (c *QyWechatApp) SpawnAccessTokenRefresherWithContext(ctx context.Context) 
 	go c.accessToken.tokenRefresher(ctx)
 }
 
+// GetJSAPITicket 获取 JSAPI_ticket
+func (c *QyWechatApp) GetJSAPITicket() (string, error) {
+	return c.jsapiTicket.getToken()
+}
+
 // getJSAPITicket 获取 JSAPI_ticket
 func (c *QyWechatApp) getJSAPITicket() (TokenInfo, error) {
 	get, err := c.execGetJSAPITicket(reqJSAPITicket{})
@@ -176,6 +192,11 @@ func (c *QyWechatApp) getJSAPITicket() (TokenInfo, error) {
 		return TokenInfo{}, err
 	}
 	return TokenInfo{Token: get.Ticket, ExpiresIn: time.Duration(get.ExpiresInSecs)}, nil
+}
+
+// GetJSAPITicketAgentConfig 获取 JSAPI_ticket_agent_config
+func (c *QyWechatApp) GetJSAPITicketAgentConfig() (string, error) {
+	return c.jsapiTicketAgentConfig.getToken()
 }
 
 // getJSAPITicketAgentConfig 获取 JSAPI_ticket_agent_config
@@ -202,18 +223,28 @@ func (t *token) syncToken() error {
 	return nil
 }
 
-func (t *token) getToken() string {
+func (t *token) getToken() (string, error) {
+	if t.externalProvider != nil {
+		tok, err := t.externalProvider.GetToken(context.TODO())
+		if err != nil {
+			return "", err
+		}
+		return tok, nil
+	}
+
 	// intensive mutex juggling action
 	t.mutex.RLock()
-	if t.Token == "" || time.Now().After(t.ExpirationTime) {
+	if t.Token == "" {
 		t.mutex.RUnlock() // RWMutex doesn't like recursive locking
-		// TODO: what to do with the possible error?
-		_ = t.syncToken()
+		err := t.syncToken()
+		if err != nil {
+			return "", err
+		}
 		t.mutex.RLock()
 	}
 	tokenToUse := t.Token
 	t.mutex.RUnlock()
-	return tokenToUse
+	return tokenToUse, nil
 }
 
 func (t *token) tokenRefresher(ctx context.Context) {

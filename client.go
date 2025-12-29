@@ -97,7 +97,10 @@ func (c *QyWechat) WithApp(corpSecret string, agentID int64) *QyWechatApp {
 }
 
 func (c *QyWechatSystemApp) executeQyapiGet(path string, req urlValuer, respObj interface{}, withAccessToken bool) error {
-	qyUrl := c.composeQyapiURLWithToken(path, req, withAccessToken)
+	qyUrl, err := c.composeQyapiURLWithToken(path, req, withAccessToken)
+	if err != nil {
+		return err
+	}
 	urlStr := qyUrl.String()
 
 	resp, err := c.opts.HTTP.Get(urlStr)
@@ -117,18 +120,23 @@ func (c *QyWechatSystemApp) executeQyapiGet(path string, req urlValuer, respObj 
 	return nil
 }
 
-func (c *QyWechatSystemApp) composeQyapiURLWithToken(path string, req interface{}, withAccessToken bool) *url.URL {
+func (c *QyWechatSystemApp) composeQyapiURLWithToken(path string, req interface{}, withAccessToken bool) (*url.URL, error) {
 	qyUrl := c.composeQyapiURL(path, req)
 
 	if !withAccessToken {
-		return qyUrl
+		return qyUrl, nil
+	}
+
+	tok, err := c.accessToken.getToken()
+	if err != nil {
+		return nil, err
 	}
 
 	q := qyUrl.Query()
-	q.Set("access_token", c.accessToken.getToken())
+	q.Set("access_token", tok)
 	qyUrl.RawQuery = q.Encode()
 
-	return qyUrl
+	return qyUrl, nil
 }
 
 func (c *QyWechatSystemApp) composeQyapiURL(path string, req interface{}) *url.URL {
@@ -151,7 +159,10 @@ func (c *QyWechatSystemApp) composeQyapiURL(path string, req interface{}) *url.U
 }
 
 func (c *QyWechatApp) executeQyapiGet(path string, req urlValuer, respObj interface{}, withAccessToken bool) error {
-	qyUrl := c.composeQyapiURLWithToken(path, req, withAccessToken)
+	qyUrl, err := c.composeQyapiURLWithToken(path, req, withAccessToken)
+	if err != nil {
+		return err
+	}
 	urlStr := qyUrl.String()
 
 	resp, err := c.opts.HTTP.Get(urlStr)
@@ -171,21 +182,29 @@ func (c *QyWechatApp) executeQyapiGet(path string, req urlValuer, respObj interf
 	return nil
 }
 
-func (c *QyWechatApp) composeQyapiURLWithToken(path string, req interface{}, withAccessToken bool) *url.URL {
-	qyUrl := c.composeQyapiURL(path, req)
+func (c *QyWechatApp) composeQyapiURLWithToken(path string, req interface{}, withAccessToken bool) (*url.URL, error) {
+	qyUrl, err := c.composeQyapiURL(path, req)
+	if err != nil {
+		return nil, err
+	}
 
 	if !withAccessToken {
-		return qyUrl
+		return qyUrl, nil
+	}
+
+	tok, err := c.accessToken.getToken()
+	if err != nil {
+		return nil, err
 	}
 
 	q := qyUrl.Query()
-	q.Set("access_token", c.accessToken.getToken())
+	q.Set("access_token", tok)
 	qyUrl.RawQuery = q.Encode()
 
-	return qyUrl
+	return qyUrl, nil
 }
 
-func (c *QyWechatApp) composeQyapiURL(path string, req interface{}) *url.URL {
+func (c *QyWechatApp) composeQyapiURL(path string, req interface{}) (*url.URL, error) {
 	values := url.Values{}
 	if valuer, ok := req.(urlValuer); ok {
 		values = valuer.intoURLValues()
@@ -201,11 +220,14 @@ func (c *QyWechatApp) composeQyapiURL(path string, req interface{}) *url.URL {
 	base.Path = path
 	base.RawQuery = values.Encode()
 
-	return base
+	return base, nil
 }
 
 func (c *QyWechatSystemApp) executeQyapiJSONPost(path string, req bodyer, respObj interface{}, withAccessToken bool) error {
-	qyUrl := c.composeQyapiURLWithToken(path, req, withAccessToken)
+	qyUrl, err := c.composeQyapiURLWithToken(path, req, withAccessToken)
+	if err != nil {
+		return err
+	}
 	urlStr := qyUrl.String()
 
 	body, err := req.intoBody()
@@ -232,7 +254,10 @@ func (c *QyWechatSystemApp) executeQyapiJSONPost(path string, req bodyer, respOb
 }
 
 func (c *QyWechatApp) executeQyapiJSONPost(path string, req bodyer, respObj interface{}, withAccessToken bool) error {
-	qyUrl := c.composeQyapiURLWithToken(path, req, withAccessToken)
+	qyUrl, err := c.composeQyapiURLWithToken(path, req, withAccessToken)
+	if err != nil {
+		return err
+	}
 	urlStr := qyUrl.String()
 
 	body, err := req.intoBody()
