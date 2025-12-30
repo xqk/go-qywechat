@@ -258,7 +258,14 @@ func (t *token) getToken() (string, error) {
 		}
 	}
 	if accessToken == "" {
-		if t.Token == "" || time.Now().After(t.ExpirationTime) {
+		if t.Cache != nil && t.CacheKey != "" {
+			t.mutex.RUnlock() // RWMutex doesn't like recursive locking
+			err := t.syncToken()
+			if err != nil {
+				return "", err
+			}
+			t.mutex.RLock()
+		} else if t.Token == "" || time.Now().After(t.ExpirationTime) {
 			t.mutex.RUnlock() // RWMutex doesn't like recursive locking
 			err := t.syncToken()
 			if err != nil {
