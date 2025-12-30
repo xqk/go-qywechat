@@ -39,7 +39,7 @@ func (c *QyWechatSystemApp) GetAccessToken() (TokenInfo, error) {
 	var accessToken string
 	var expiresIn time.Duration
 
-	cacheKey := c.getAccessTokenCacheKey()
+	cacheKey := c.GetAccessTokenCacheKey()
 	currentTime := time.Now()
 
 	// 从缓存中获取accessToken
@@ -89,7 +89,7 @@ func (c *QyWechatSystemApp) GetAccessToken() (TokenInfo, error) {
 	return TokenInfo{Token: accessToken, ExpiresIn: expiresIn, ExpirationTime: expirationTime, Cache: c.cache, CacheKey: cacheKey}, nil
 }
 
-func (c *QyWechatSystemApp) getAccessTokenCacheKey() string {
+func (c *QyWechatSystemApp) GetAccessTokenCacheKey() string {
 	return fmt.Sprintf("qywechat:accessToken:%s:%s", c.QyWechat.CorpID, c.AppSecret)
 }
 
@@ -97,7 +97,7 @@ func (c *QyWechatApp) GetAccessToken() (TokenInfo, error) {
 	var accessToken string
 	var expiresIn time.Duration
 
-	cacheKey := c.getAccessTokenCacheKey()
+	cacheKey := c.GetAccessTokenCacheKey()
 	currentTime := time.Now()
 
 	// 从缓存中获取accessToken
@@ -147,7 +147,7 @@ func (c *QyWechatApp) GetAccessToken() (TokenInfo, error) {
 	return TokenInfo{Token: accessToken, ExpiresIn: expiresIn, ExpirationTime: expirationTime, Cache: c.cache, CacheKey: cacheKey}, nil
 }
 
-func (c *QyWechatApp) getAccessTokenCacheKey() string {
+func (c *QyWechatApp) GetAccessTokenCacheKey() string {
 	return fmt.Sprintf("qywechat:accessToken:%s:%d", c.QyWechat.CorpID, c.AgentID)
 }
 
