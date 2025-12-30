@@ -240,6 +240,7 @@ func (t *token) getToken() (string, error) {
 	var accessToken string
 	var expiresIn time.Duration
 	currentTime := time.Now()
+	println("😄 getToken ", t.Cache != nil, t.CacheKey != "")
 	if t.Cache != nil && t.CacheKey != "" { // 有缓存和缓存键（仅限accessToken 禁止jsApiToken等缓存）
 		var ctx = context.Background()
 		// 获取缓存剩余时间
