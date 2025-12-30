@@ -234,7 +234,7 @@ func (t *token) getToken() (string, error) {
 
 	// intensive mutex juggling action
 	t.mutex.RLock()
-	if t.Token == "" {
+	if t.Token == "" || time.Now().After(t.ExpirationTime) {
 		t.mutex.RUnlock() // RWMutex doesn't like recursive locking
 		err := t.syncToken()
 		if err != nil {
