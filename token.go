@@ -23,8 +23,6 @@ type TokenInfo struct {
 	Token          string
 	ExpiresIn      time.Duration
 	ExpirationTime time.Time
-	Cache          *redis.Client
-	CacheKey       string
 }
 
 type token struct {
@@ -33,6 +31,8 @@ type token struct {
 	lastRefresh      time.Time
 	getTokenFunc     func() (TokenInfo, error)
 	externalProvider ITokenProvider
+	Cache            *redis.Client
+	CacheKey         string
 }
 
 func (c *QyWechatSystemApp) GetAccessToken() (TokenInfo, error) {
@@ -86,7 +86,7 @@ func (c *QyWechatSystemApp) GetAccessToken() (TokenInfo, error) {
 
 	expirationTime := currentTime.Add(expiresIn * time.Second)
 
-	return TokenInfo{Token: accessToken, ExpiresIn: expiresIn, ExpirationTime: expirationTime, Cache: c.cache, CacheKey: cacheKey}, nil
+	return TokenInfo{Token: accessToken, ExpiresIn: expiresIn, ExpirationTime: expirationTime}, nil
 }
 
 func (c *QyWechatSystemApp) GetAccessTokenCacheKey() string {
@@ -144,7 +144,7 @@ func (c *QyWechatApp) GetAccessToken() (TokenInfo, error) {
 
 	expirationTime := currentTime.Add(expiresIn * time.Second)
 
-	return TokenInfo{Token: accessToken, ExpiresIn: expiresIn, ExpirationTime: expirationTime, Cache: c.cache, CacheKey: cacheKey}, nil
+	return TokenInfo{Token: accessToken, ExpiresIn: expiresIn, ExpirationTime: expirationTime}, nil
 }
 
 func (c *QyWechatApp) GetAccessTokenCacheKey() string {
