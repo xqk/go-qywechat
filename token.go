@@ -242,31 +242,25 @@ func (t *token) getToken() (string, error) {
 	var accessToken string
 	var expiresIn time.Duration
 	currentTime := time.Now()
-	var step string
 	if t.Cache != nil && t.CacheKey != "" { // 有缓存和缓存键（仅限accessToken 禁止jsApiToken等缓存）
 		var ctx = context.Background()
 		// 获取缓存剩余时间
 		ttl, err := t.Cache.TTL(ctx, t.CacheKey).Result()
 		if err != nil {
-			step = "1"
 			return "", err
 		}
-		step = "2"
 
 		ttlSec := int64(ttl.Seconds())
 		if ttlSec > 0 {
 			accessToken, err = t.Cache.Get(ctx, t.CacheKey).Result()
 			if err != nil {
-				step = "3"
 				return "", err
 			}
-			step = "4"
 			expiresIn = time.Duration(ttlSec)
 		}
 	}
 	if accessToken == "" {
 		if t.Cache != nil && t.CacheKey != "" {
-			step = "5"
 			t.mutex.RUnlock() // RWMutex doesn't like recursive locking
 			err := t.syncToken()
 			if err != nil {
@@ -274,7 +268,6 @@ func (t *token) getToken() (string, error) {
 			}
 			t.mutex.RLock()
 		} else if t.Token == "" || time.Now().After(t.ExpirationTime) {
-			step = "6"
 			t.mutex.RUnlock() // RWMutex doesn't like recursive locking
 			err := t.syncToken()
 			if err != nil {
@@ -283,7 +276,6 @@ func (t *token) getToken() (string, error) {
 			t.mutex.RLock()
 		}
 	} else {
-		step = "7"
 		t.Token = accessToken
 		t.ExpirationTime = currentTime.Add(expiresIn * time.Second)
 		t.ExpiresIn = expiresIn
@@ -291,7 +283,7 @@ func (t *token) getToken() (string, error) {
 	}
 
 	tokenToUse := t.Token
-	println("😄 getToken t.Token", t.Cache != nil, t.CacheKey != "", tokenToUse, step)
+	//println("😄 getToken t.Token", t.Cache != nil, t.CacheKey != "", tokenToUse, step)
 	t.mutex.RUnlock()
 	return tokenToUse, nil
 }
