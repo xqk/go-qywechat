@@ -77,6 +77,7 @@ func (c *QyWechatSystemApp) GetAccessToken() (TokenInfo, error) {
 		// 设置accessToken缓存
 		if c.cache != nil {
 			var ctx = context.Background()
+			c.cache.Del(ctx, cacheKey)
 			_, err = c.cache.SetNX(ctx, cacheKey, accessToken, expiresIn*time.Second).Result()
 			if err != nil {
 				return TokenInfo{}, err
@@ -135,6 +136,7 @@ func (c *QyWechatApp) GetAccessToken() (TokenInfo, error) {
 		// 设置accessToken缓存
 		if c.cache != nil {
 			var ctx = context.Background()
+			c.cache.Del(ctx, cacheKey)
 			_, err = c.cache.SetNX(ctx, cacheKey, accessToken, expiresIn*time.Second).Result()
 			if err != nil {
 				return TokenInfo{}, err
