@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/cenkalti/backoff/v4"
+	"github.com/go-redis/redis/v8"
 	"sync"
 	"time"
 )
@@ -22,6 +23,8 @@ type TokenInfo struct {
 	Token          string
 	ExpiresIn      time.Duration
 	ExpirationTime time.Time
+	Cache          *redis.Client
+	CacheKey       string
 }
 
 type token struct {
@@ -83,7 +86,7 @@ func (c *QyWechatSystemApp) GetAccessToken() (TokenInfo, error) {
 
 	expirationTime := currentTime.Add(expiresIn * time.Second)
 
-	return TokenInfo{Token: accessToken, ExpiresIn: expiresIn, ExpirationTime: expirationTime}, nil
+	return TokenInfo{Token: accessToken, ExpiresIn: expiresIn, ExpirationTime: expirationTime, Cache: c.cache, CacheKey: cacheKey}, nil
 }
 
 func (c *QyWechatSystemApp) getAccessTokenCacheKey() string {
@@ -141,7 +144,7 @@ func (c *QyWechatApp) GetAccessToken() (TokenInfo, error) {
 
 	expirationTime := currentTime.Add(expiresIn * time.Second)
 
-	return TokenInfo{Token: accessToken, ExpiresIn: expiresIn, ExpirationTime: expirationTime}, nil
+	return TokenInfo{Token: accessToken, ExpiresIn: expiresIn, ExpirationTime: expirationTime, Cache: c.cache, CacheKey: cacheKey}, nil
 }
 
 func (c *QyWechatApp) getAccessTokenCacheKey() string {
@@ -234,14 +237,42 @@ func (t *token) getToken() (string, error) {
 
 	// intensive mutex juggling action
 	t.mutex.RLock()
-	if t.Token == "" || time.Now().After(t.ExpirationTime) {
-		t.mutex.RUnlock() // RWMutex doesn't like recursive locking
-		err := t.syncToken()
+	var accessToken string
+	var expiresIn time.Duration
+	currentTime := time.Now()
+	if t.Cache != nil && t.CacheKey != "" { // 有缓存和缓存键（仅限accessToken 禁止jsApiToken等缓存）
+		var ctx = context.Background()
+		// 获取缓存剩余时间
+		ttl, err := t.Cache.TTL(ctx, t.CacheKey).Result()
 		if err != nil {
 			return "", err
 		}
-		t.mutex.RLock()
+
+		ttlSec := int64(ttl.Seconds())
+		if ttlSec > 0 {
+			accessToken, err = t.Cache.Get(ctx, t.CacheKey).Result()
+			if err != nil {
+				return "", err
+			}
+			expiresIn = time.Duration(ttlSec)
+		}
 	}
+	if accessToken == "" {
+		if t.Token == "" || time.Now().After(t.ExpirationTime) {
+			t.mutex.RUnlock() // RWMutex doesn't like recursive locking
+			err := t.syncToken()
+			if err != nil {
+				return "", err
+			}
+			t.mutex.RLock()
+		}
+	} else {
+		t.Token = accessToken
+		t.ExpirationTime = currentTime.Add(expiresIn * time.Second)
+		t.ExpiresIn = expiresIn
+		t.lastRefresh = currentTime.Add((7200 - expiresIn) * time.Second)
+	}
+
 	tokenToUse := t.Token
 	t.mutex.RUnlock()
 	return tokenToUse, nil
