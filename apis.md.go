@@ -419,3 +419,59 @@ func (c *QyWechatApp) execCloseTempChatExternalContact(req reqCloseTempChatExter
 
 	return resp, nil
 }
+
+// execMessageSend 发送应用消息
+func (c *QyWechatApp) execMessageSend(req reqMessage) (respMessageSend, error) {
+	var resp respMessageSend
+	err := c.executeQyapiJSONPost("/cgi-bin/message/send", req, &resp, true)
+	if err != nil {
+		return respMessageSend{}, err
+	}
+	if bizErr := resp.TryIntoErr(); bizErr != nil {
+		return respMessageSend{}, bizErr
+	}
+
+	return resp, nil
+}
+
+// execAppchatSend 应用推送消息
+func (c *QyWechatApp) execAppchatSend(req reqMessage) (respMessageSend, error) {
+	var resp respMessageSend
+	err := c.executeQyapiJSONPost("/cgi-bin/appchat/send", req, &resp, true)
+	if err != nil {
+		return respMessageSend{}, err
+	}
+	if bizErr := resp.TryIntoErr(); bizErr != nil {
+		return respMessageSend{}, bizErr
+	}
+
+	return resp, nil
+}
+
+// execKfSend 发送消息
+func (c *QyWechatApp) execKfSend(req reqMessage) (respMessageSend, error) {
+	var resp respMessageSend
+	err := c.executeQyapiJSONPost("/cgi-bin/kf/send_msg", req, &resp, true)
+	if err != nil {
+		return respMessageSend{}, err
+	}
+	if bizErr := resp.TryIntoErr(); bizErr != nil {
+		return respMessageSend{}, bizErr
+	}
+
+	return resp, nil
+}
+
+// execKfOnEventSend 发送欢迎语等事件响应消息
+func (c *QyWechatApp) execKfOnEventSend(req reqMessage) (respMessageSend, error) {
+	var resp respMessageSend
+	err := c.executeQyapiJSONPost("/cgi-bin/kf/send_msg_on_event", req, &resp, true)
+	if err != nil {
+		return respMessageSend{}, err
+	}
+	if bizErr := resp.TryIntoErr(); bizErr != nil {
+		return respMessageSend{}, bizErr
+	}
+
+	return resp, nil
+}
