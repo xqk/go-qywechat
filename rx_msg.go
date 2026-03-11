@@ -215,3 +215,15 @@ func (m *RxMessage) EventUnknown() (*rxEventUnknown, bool) {
 	y, ok := m.extras.(*rxEventUnknown)
 	return y, ok
 }
+
+// EventDocChange 文档变更事件
+func (m *RxMessage) EventDocChange() (*rxEventDocChange, bool) {
+	y, ok := m.extras.(*rxEventDocChange)
+	return y, ok
+}
+
+// EventDocSmartSheetChange 文档子表变更事件
+func (m *RxMessage) EventDocSmartSheetChange() (*rxEventDocSmartSheetChange, bool) {
+	y, ok := m.extras.(*rxEventDocSmartSheetChange)
+	return y, ok
+}

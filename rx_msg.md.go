@@ -63,6 +63,12 @@ const EventTypeSysApprovalChange EventType = "sys_approval_change"
 // EventTypeChangeContact 通讯录回调通知
 const EventTypeChangeContact EventType = "change_contact"
 
+// EventTypeDocChange 文档回调通知
+const EventTypeDocChange EventType = "doc_change"
+
+// EventTypeDocSmartSheetChange 文档字段变更回调通知
+const EventTypeDocSmartSheetChange EventType = "smart_sheet_change"
+
 // ChangeType 变更类型
 type ChangeType string
 
@@ -92,6 +98,39 @@ const ChangeTypeUpdateUser ChangeType = "update_user"
 
 // ChangeTypeDeleteUser 删除成员事件
 const ChangeTypeDeleteUser ChangeType = "delete_user"
+
+// ChangeTypeDocMemberChange 修改文档成员事件
+const ChangeTypeDocMemberChange ChangeType = "doc_member_change"
+
+// ChangeTypeDeleteDoc 删除文档事件
+const ChangeTypeDeleteDoc ChangeType = "delete_doc"
+
+// ChangeTypeDocFormComplete 收集表完成事件
+const ChangeTypeDocFormComplete ChangeType = "form_complete"
+
+// ChangeTypeDocDeleteForm 删除收集表事件
+const ChangeTypeDocDeleteForm ChangeType = "delete_form"
+
+// ChangeTypeDocFormSettingsChange 修改收集表设置事件
+const ChangeTypeDocFormSettingsChange ChangeType = "form_settings_change"
+
+// ChangeTypeDocSheetAddFiled 文档子表新增字段事件
+const ChangeTypeDocSheetAddFiled ChangeType = "add_filed"
+
+// ChangeTypeDocSheetUpdateFiled 文档子表更新字段事件
+const ChangeTypeDocSheetUpdateFiled ChangeType = "update_filed"
+
+// ChangeTypeDocSheetDeleteFiled 文档子表删除字段事件
+const ChangeTypeDocSheetDeleteFiled ChangeType = "delete_filed"
+
+// ChangeTypeDocSheetAddRecord 文档子表新增记录事件
+const ChangeTypeDocSheetAddRecord ChangeType = "add_record"
+
+// ChangeTypeDocSheetUpdateRecord 文档子表更新记录事件
+const ChangeTypeDocSheetUpdateRecord ChangeType = "update_record"
+
+// ChangeTypeDocSheetDeleteRecord 文档子表删除记录事件
+const ChangeTypeDocSheetDeleteRecord ChangeType = "delete_record"
 
 // EventTypeAppMenuClick 点击菜单
 const EventTypeAppMenuClick = "click"
@@ -377,4 +416,22 @@ type rxEventUnknown struct {
 	EventType string `xml:"-"`
 	// Raw 原始的消息体
 	Raw string `xml:"-"`
+}
+
+// 文档及收集表变更事件
+type rxEventDocChange struct {
+	// EventKey 事件key
+	EventKey string   `xml:"EventKey"`
+	DocId    []string `xml:"DocId"`
+	FormId   []string `xml:"FormId"`
+}
+
+// 文档子表字段、记录变更事件
+type rxEventDocSmartSheetChange struct {
+	// EventKey 事件key
+	EventKey string   `xml:"EventKey"`
+	DocId    string   `xml:"DocId"`
+	SheetId  string   `xml:"SheetId"`
+	FieldId  []string `xml:"FieldId"`
+	RecordId []string `xml:"RecordId"`
 }

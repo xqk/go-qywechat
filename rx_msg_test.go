@@ -1,6 +1,7 @@
 package go_qywechat
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -123,6 +124,60 @@ func TestRxMessageChangeContactCreateUser(t *testing.T) {
 				y, ok := msg.EventChangeTypeCreateUser()
 				c.So(ok, c.ShouldBeTrue)
 				c.So(y, c.ShouldNotBeNil)
+			}
+		})
+	})
+}
+
+func TestRxMessageChangeDocMemberChange(t *testing.T) {
+	c.Convey("解析接收的 XML 消息体", t, func() {
+		c.Convey("修改文档成员事件", func() {
+			body := []byte(" <xml><ToUserName><![CDATA[toUser]]></ToUserName><FromUserName><![CDATA[fromUser]]></FromUserName> <CreateTime>1348831860</CreateTime><MsgType><![CDATA[event]]></MsgType><Event><![CDATA[doc_change]]></Event><ChangeType><![CDATA[doc_member_change]]></ChangeType><DocId><![CDATA[wcjgewCwAAqeJcPI1d8Pwbjt7nttzAAA]]></DocId><DocId><![CDATA[wcjgewCwAAqeJcPI1d8Pwbjt7nttzBBB]]></DocId></xml>")
+
+			msg, err := fromEnvelope(body)
+			c.So(err, c.ShouldBeNil)
+
+			{
+				y, ok := msg.EventDocChange()
+				c.So(ok, c.ShouldBeTrue)
+				c.So(y, c.ShouldNotBeNil)
+				fmt.Println(y.DocId)
+			}
+		})
+	})
+}
+
+func TestRxMessageChangeDocSmartSheetChange(t *testing.T) {
+	c.Convey("解析接收的 XML 消息体", t, func() {
+		c.Convey("新增字段事件", func() {
+			body := []byte(" <xml><ToUserName><![CDATA[toUser]]></ToUserName><FromUserName><![CDATA[fromUser]]></FromUserName> <CreateTime>1348831860</CreateTime><MsgType><![CDATA[event]]></MsgType><Event><![CDATA[smart_sheet_change]]></Event><ChangeType><![CDATA[add_filed]]></ChangeType><DocId><![CDATA[dcjgewCwAAqeJcPI1d8Pwbjt7nttzAAA]]></DocId><SheetId><![CDATA[SheetId]]></SheetId><FieldId><![CDATA[FieldId1]]></FieldId><FieldId><![CDATA[FieldId2]]></FieldId></xml>")
+
+			msg, err := fromEnvelope(body)
+			c.So(err, c.ShouldBeNil)
+
+			{
+				y, ok := msg.EventDocSmartSheetChange()
+				c.So(ok, c.ShouldBeTrue)
+				c.So(y, c.ShouldNotBeNil)
+				fmt.Println(y.DocId)
+				fmt.Println(y.SheetId)
+				fmt.Println(y.FieldId)
+			}
+		})
+
+		c.Convey("更新字段事件", func() {
+			body := []byte(" <xml><ToUserName><![CDATA[toUser]]></ToUserName><FromUserName><![CDATA[fromUser]]></FromUserName> <CreateTime>1348831860</CreateTime><MsgType><![CDATA[event]]></MsgType><Event><![CDATA[smart_sheet_change]]></Event><ChangeType><![CDATA[update_filed]]></ChangeType><DocId><![CDATA[dcjgewCwAAqeJcPI1d8Pwbjt7nttzAAA]]></DocId><SheetId><![CDATA[SheetId]]></SheetId><FieldId><![CDATA[FieldId1]]></FieldId><FieldId><![CDATA[FieldId2]]></FieldId></xml>")
+
+			msg, err := fromEnvelope(body)
+			c.So(err, c.ShouldBeNil)
+
+			{
+				y, ok := msg.EventDocSmartSheetChange()
+				c.So(ok, c.ShouldBeTrue)
+				c.So(y, c.ShouldNotBeNil)
+				fmt.Println(y.DocId)
+				fmt.Println(y.SheetId)
+				fmt.Println(y.FieldId)
 			}
 		})
 	})

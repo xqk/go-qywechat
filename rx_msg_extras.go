@@ -193,6 +193,20 @@ func extractMessageExtras(common rxMessageCommon, body []byte) (messageKind, err
 				return nil, err
 			}
 			return &x, nil
+		case EventTypeDocChange:
+			var x rxEventDocChange
+			err := xml.Unmarshal(body, &x)
+			if err != nil {
+				return nil, err
+			}
+			return &x, nil
+		case EventTypeDocSmartSheetChange:
+			var x rxEventDocSmartSheetChange
+			err := xml.Unmarshal(body, &x)
+			if err != nil {
+				return nil, err
+			}
+			return &x, nil
 		default:
 			// 返回一个未定义的事件类型
 			return &rxEventUnknown{EventType: string(common.Event), Raw: string(body)}, nil
@@ -724,4 +738,12 @@ func (r rxEventAppUnsubscribe) formatInto(w io.Writer) {
 
 func (r rxEventUnknown) formatInto(w io.Writer) {
 	_, _ = fmt.Fprintf(w, "Raw: %#v", r.Raw)
+}
+
+func (r rxEventDocChange) formatInto(w io.Writer) {
+	_, _ = fmt.Fprintf(w, "EventKey: %#v", r.EventKey)
+}
+
+func (r rxEventDocSmartSheetChange) formatInto(w io.Writer) {
+	_, _ = fmt.Fprintf(w, "EventKey: %#v", r.EventKey)
 }
